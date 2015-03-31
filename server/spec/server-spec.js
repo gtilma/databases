@@ -67,21 +67,21 @@ describe("Persistent Node Chat Server", function() {
     // Let's insert a message into the db
     var queryString = "INSERT INTO messages (user_id, text) \
                        VALUES ((SELECT id FROM users WHERE name = ? LIMIT 1), ?)";
-    var queryArgs = [ 'Valjean', 'Men like you can never change!']
+    var queryArgs = [ 'Valjean', 'Men like you can never change!' ];
 
-    dbConnection.query(queryString, queryArgs, function(err) {
-      if (err) throw err;
-    }, function () {
+    dbConnection.query(queryString, queryArgs, function() {
+      console.log('success')
       // Now query the Node chat server and see if it returns
       // the message we just inserted:
       request({ method: "GET",
                 uri: "http://127.0.0.1:3000/classes/messages"
       }, function(error, response, body) {
+        console.log(body)
         var messageLog = JSON.parse(body);
         expect(messageLog[0].text).to.equal("Men like you can never change!");
+
         done();
       });
-
     });
   });
 });

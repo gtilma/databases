@@ -6,11 +6,12 @@ module.exports = {
   messages: {
     get: function (req, res) {
       console.log('In controllers.messages.get');
-      models.messages.get(function(err, messages){
-        if (err) throw err;
+      models.messages.get(function(messages){
+        // if (err) throw err;
+        console.log('messages: ', messages)
         res.json(messages);
+        res.end()
       });
-      res.end()
     },
     post: function (req, res) {
       console.log('In controllers.messages.post');
