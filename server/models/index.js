@@ -1,58 +1,52 @@
 var db = require('../db');
 
 
-
-
 module.exports = {
   messages: {
     get: function (cb) {
-      var queryString = "SELECT * FROM messages";
-      var queryArgs = [];
+      console.log('In models.messages.get');
+      var queryString = "SELECT messages.id, users.name, messages.text FROM messages \
+                         left outer JOIN users \
+                         ON (messages.user_id = users.id) \
+                         order by messages.id desc";
 
-      db.query(queryString, queryArgs, function(err, results) {
-        if(err) console.log(err);
-        console.log(results);
+      db.query(queryString, function(err, results) {
+        if (err) throw err;
         if (cb) cb(results);
+        // db.end();
       });
-
-      db.end();
     },
     post: function (message, cb) {
-      var u_id = message.u_id;
-      var text = message.text;
+      console.log('In models.messages.post');
 
-      var queryString = "INSERT into messages (user_id, text) VALUES (?,?)"
-      var queryArgs = [u_id, text];
-      db.query(queryString, queryArgs, function(err, results) {
-        if(err) console.log(err);
-        if (cb) cb(results);
+      var queryString = "INSERT INTO messages (user_id, text) \
+                         VALUES ((SELECT id FROM users WHERE name = ? LIMIT 1), ?)";
+
+      db.query(queryString, message, function(err, results) {
+        if (err) throw err;
+        cb(results);  
       });
-
-      db.end();
     }
   },
 
   users: {
-    get: function (user, cb) {
-      var queryString = "SELECT id FROM users WHERE name = ?";
-      var queryArgs = [user];
-      db.query(queryString, queryArgs, function(err, results) {
-        if(err) {throw err}
-          console.log(results)
-          cb(results);
+    get: function (cb) {
+      console.log('In models.users.get');
+      var queryString = "SELECT * FROM users";
+      db.query(queryString, function(err, results) {
+        // if (err) throw err;
+        cb(results);
+        // db.end();
       });
-
-      db.end();
     },
     post: function (user, cb) {
-      var queryString = "INSERT into users (name) VALUES (?)";
-      var queryArgs = [user];
-      db.query(queryString, queryArgs, function(err, results) {
-        if (err) console.log(err);
-        if (cb) cb(results);
+      console.log('In models.users.post');
+      var queryString = "INSERT INTO users (name) VALUES (?)";
+      db.query(queryString, user, function(err, results) {
+        // if (err) console.log(err);
+       cb(results);
+        // db.end();
       });
-
-      db.end();
     }
   }
 };
