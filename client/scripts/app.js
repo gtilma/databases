@@ -48,8 +48,6 @@ app.send = function(message) {
 	});
 }
 
-
-
 app.clearMessages = function() {
   $('#chats').html('');
 };
